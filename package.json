@@ -23,6 +23,7 @@
     "helmet": "^3.22.0",
     "http-errors": "^1.7.3",
     "morgan": "^1.10.0",
+    "redis": "^3.0.2",
     "telegraf": "^3.36.0",
     "telegraf-inline-menu": "^4.0.0"
   },

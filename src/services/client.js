@@ -1,5 +1,8 @@
 const axios = require('axios');
+
 const config = require('../config');
+const bot = require('../telegram/bot');
+const {handler} = require('./telegram');
 
 const globalOptions = {
   baseURL: config.MAIN_SERVER_CONNECT,
@@ -22,6 +25,12 @@ async function checkCode(code, id, firstName = ' ', lastName = ' ') {
   try {
     response = await axios(options);
   } catch (err) {
+    console.log('Axios error with checkCode:\n');
+    console.log(options);
+
+    await bot.telegram.sendMessage(id, 'Нажаль твій код не дійсний.');
+    await handler(id);
+
     throw new Error(
       `Такого коду не існує!\n${err} - ${err.response.statusText}`,
     );
@@ -52,9 +61,10 @@ async function sendAnswerFromUser({testId, participantId, questionId, answer}) {
   try {
     await axios(options);
   } catch (err) {
-    throw new Error(
-      `Не правильно відправлена відповідь!\n${err} - ${err.response.statusText}`,
-    );
+    console.log('Axios error with sendAnswerFromUser:\n');
+    console.log(options);
+
+    throw new Error(`Не правильно відправлена відповідь!\n${err.message}`);
   }
 }
 

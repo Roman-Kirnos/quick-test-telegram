@@ -1,10 +1,13 @@
 const session = require('telegraf/session');
-const Markup = require('telegraf/markup');
 
-const client = require('../client');
 const bot = require('./bot');
 const auth = require('./auth');
 const {stage, stagesArray} = require('./scenes');
+const {
+  redis,
+  client: {sendAnswerFromUser},
+  telegram: {deleteLastMessage, handler},
+} = require('../services');
 
 bot.use(session());
 bot.use(stage.middleware());
@@ -20,39 +23,45 @@ bot.catch((err, ctx) => {
 bot.start(async ctx => {
   await auth(ctx);
 
-  await ctx.reply(
-    'Привіт! Ти приєднався до чат-бота для швидкого тесту.',
-    Markup.inlineKeyboard([
-      Markup.callbackButton('Запуск бота', 'choiceButtons'),
-    ])
-      .oneTime()
-      .resize()
-      .extra(),
-  );
+  await ctx.reply('Привіт! Тебе вітає чат-бота для швидкого тесту.');
+
+  await handler(ctx.from.id);
 });
 
-bot.action('choiceButtons', async ctx => {
-  await ctx.reply(
-    'Тепер вибери кнопку:',
-    Markup.inlineKeyboard([
-      Markup.callbackButton('Під`єднатися до тесту', 'connectionToGroup'),
-    ])
-      .oneTime()
-      .resize()
-      .extra(),
-  );
-});
+bot.action(
+  'mainMenu',
+  async (ctx, next) => {
+    await ctx.answerCbQuery();
+
+    await deleteLastMessage(
+      ctx.update.callback_query.message.chat.id,
+      ctx.update.callback_query.message.message_id,
+    );
+
+    await next(ctx);
+  },
+  handler,
+);
 
 bot.on('callback_query', async ctx => {
   const data = JSON.parse(ctx.callbackQuery.data);
-  await client.sendAnswerFromUser({
+
+  await ctx.answerCbQuery();
+
+  await redis.deleteUserMessageId(ctx.from.id);
+  await deleteLastMessage(
+    ctx.from.id,
+    ctx.update.callback_query.message.message_id,
+  );
+
+  await sendAnswerFromUser({
     testId: data.testId,
     participantId: ctx.from.id,
     questionId: data.questionId,
     answer: [data.answerId],
   });
-  ctx.answerCbQuery();
-  ctx.reply('Відповідь прийнята, будь ласка зачекайте');
+
+  await ctx.reply('Відповідь прийнята, будь ласка зачекайте');
 });
 
 module.exports = {

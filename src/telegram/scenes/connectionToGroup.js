@@ -1,18 +1,30 @@
 const WizardScene = require('telegraf/scenes/wizard');
 const Markup = require('telegraf/markup');
 
-const {checkCode} = require('../../client');
+const {
+  client: {checkCode},
+  telegram: {deleteLastMessage},
+} = require('../../services');
 
 const name = 'connectionToGroup';
 
 const scene = new WizardScene(
   name,
   async ctx => {
+    await deleteLastMessage(
+      ctx.update.callback_query.message.chat.id,
+      ctx.update.callback_query.message.message_id,
+    );
+
     await ctx.reply('Введіть код для підключення до тесту:');
     return ctx.wizard.next();
   },
   async ctx => {
-    if (/^[a-zA-Z0-9]{6}$/.test(ctx.message.text || ' ')) {
+    if (
+      /^[a-zA-Z0-9]{6}$/.test(
+        ctx.message.text === undefined ? ' ' : ctx.message.text,
+      )
+    ) {
       const res = await checkCode(
         ctx.message.text,
         ctx.message.from.id,
@@ -31,7 +43,7 @@ const scene = new WizardScene(
       'Неправильно введено код! Виберіть дію:',
       Markup.inlineKeyboard([
         Markup.callbackButton('Спробувати ще', name),
-        Markup.callbackButton('До меню', 'choiceButtons'),
+        Markup.callbackButton('До меню', 'mainMenu'),
       ])
         .oneTime()
         .extra(),

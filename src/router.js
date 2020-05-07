@@ -1,6 +1,6 @@
 const router = require('express').Router();
 
-const {telegram} = require('../services/index');
+const {telegram} = require('./services');
 
 router.post('/launchtest', async (req, res) => {
   try {
@@ -13,8 +13,6 @@ router.post('/launchtest', async (req, res) => {
 });
 
 router.post('/question', async (req, res) => {
-  res.send();
-
   try {
     await telegram.sendQuestionToUsers(
       req.body.participants_id,
@@ -23,36 +21,38 @@ router.post('/question', async (req, res) => {
   } catch (err) {
     console.log(`Error with send questions to users ${err}`);
   }
+
+  res.send();
 });
 
 router.post('/question/result', async (req, res) => {
-  res.send();
-
   try {
     await telegram.sendAnswersToUsers(req.body);
   } catch (err) {
     console.log(`Error with send results to users ${err}`);
   }
+
+  res.send();
 });
 
 router.post('/question/noresult', async (req, res) => {
-  res.send();
-
   try {
     await telegram.sendWhoNoAnswered(req.body);
   } catch (err) {
     console.log(`Error with send who no result to users ${err}`);
   }
+
+  res.send();
 });
 
 router.post('/question/end', async (req, res) => {
-  res.send();
-
   try {
     await telegram.endTest(req.body);
   } catch (err) {
     console.log(`Error with send about end of the test to users ${err}`);
   }
+
+  res.send();
 });
 
 module.exports = router;
