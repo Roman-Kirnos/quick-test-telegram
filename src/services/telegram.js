@@ -23,9 +23,11 @@ async function deleteLastMessage(chatId, messageId) {
     `deleteLastMessage: { chatId: ${chatId}, messageId: ${messageId} }`,
   );
 
-  await bot.telegram.deleteMessage(chatId, Number(messageId)).catch(err => {
-    throw new Error(`Error with delete message: ${err}`);
-  });
+  await bot.telegram
+    .deleteMessage(Number(chatId), Number(messageId))
+    .catch(err => {
+      throw new Error(`Error with delete message: ${err}`);
+    });
 }
 
 function generateArrayRandomNumber(min, max) {
@@ -71,12 +73,12 @@ function getArrayRandomButtons(question) {
   return markupButtons;
 }
 
-async function startTest(usersId, time = 5) {
+async function startTest(usersId, timeAfterStart = 5) {
   usersId.forEach(async id => {
     try {
       await bot.telegram.sendMessage(
         id,
-        `Тест почався. Запитання прийдуть через ${time} секунд.`,
+        `Тест почався. Запитання прийдуть через ${timeAfterStart} секунд.`,
       );
     } catch (err) {
       console.log(`Error with startTest: { usersId: ${usersId} }`);
@@ -88,8 +90,8 @@ async function startTest(usersId, time = 5) {
   });
 
   setTimeout(() => {
-    console.log(`Start after ${time} sec.`);
-  }, time * 1000);
+    console.log(`Start after ${timeAfterStart} sec.`);
+  }, timeAfterStart * 1000);
 }
 
 async function sendQuestionToUsers(usersId, question) {
@@ -99,7 +101,7 @@ async function sendQuestionToUsers(usersId, question) {
 
       const message = await bot.telegram.sendMessage(
         id,
-        `Запитання №${question.actualQuestion} з ${question.allQuestions}:\n  ${question.title}:\n ${question.subtitle}?`,
+        `Запитання №${question.actualQuestion} з ${question.allQuestions}:\n${question.title}:\n ${question.subtitle}?\nВ тебе є ${question.timeout} секунд.`,
         Markup.inlineKeyboard(markupButtons)
           .resize()
           .oneTime()
@@ -128,7 +130,8 @@ async function sendAnswersToUsers(body) {
 
       await bot.telegram.sendMessage(
         result.participants,
-        `Відповідь на тест ${body.title}: ${message}`,
+        `Відповідь на запитання "${body.title}":\n<i>${message}</i>`,
+        {parse_mode: 'HTML'},
       );
     } catch (err) {
       console.log('Error with sendAnswersToUsers');
