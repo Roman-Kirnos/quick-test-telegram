@@ -11,12 +11,16 @@ const name = 'connectionToGroup';
 const scene = new WizardScene(
   name,
   async ctx => {
-    await deleteLastMessage(
-      ctx.update.callback_query.message.chat.id,
-      ctx.update.callback_query.message.message_id,
-    );
+    try {
+      await deleteLastMessage(
+        ctx.update.callback_query.message.chat.id,
+        ctx.update.callback_query.message.message_id,
+      );
 
-    await ctx.reply('Введіть код для підключення до тесту:');
+      await ctx.reply('Введіть код для підключення до тесту:');
+    } catch (err) {
+      throw new Error(`Error with delete message in connectionToGroup: ${err}`);
+    }
     return ctx.wizard.next();
   },
   async ctx => {
@@ -25,29 +29,37 @@ const scene = new WizardScene(
         ctx.message.text === undefined ? ' ' : ctx.message.text,
       )
     ) {
-      const res = await checkCode(
-        ctx.message.text,
-        ctx.message.from.id,
-        ctx.message.from.first_name,
-        ctx.from.last_name,
-      );
+      try {
+        const res = await checkCode(
+          ctx.message.text,
+          ctx.message.from.id,
+          ctx.message.from.first_name,
+          ctx.from.last_name,
+        );
 
-      await ctx.reply(
-        `Вас підключено до тесту "${res.data.testTitle}". Кількість запитань: ${res.data.count}. Чекайте початку тесту.`,
-      );
+        await ctx.reply(
+          `Вас підключено до тесту "${res.data.testTitle}". Кількість запитань: ${res.data.count}. Чекайте початку тесту.`,
+        );
+      } catch (err) {
+        throw new Error(`Error with get res, scene connectionToGroup: ${err}`);
+      }
 
       return ctx.scene.leave();
     }
 
-    await ctx.reply(
-      'Неправильно введено код! Виберіть дію:',
-      Markup.inlineKeyboard([
-        Markup.callbackButton('Спробувати ще', name),
-        Markup.callbackButton('До меню', 'mainMenu'),
-      ])
-        .oneTime()
-        .extra(),
-    );
+    try {
+      await ctx.reply(
+        'Неправильно введено код! Виберіть дію:',
+        Markup.inlineKeyboard([
+          Markup.callbackButton('Спробувати ще', name),
+          Markup.callbackButton('До меню', 'mainMenu'),
+        ])
+          .oneTime()
+          .extra(),
+      );
+    } catch (err) {
+      throw new Error(`Error with send buttons in scene: ${err}`);
+    }
 
     return ctx.scene.leave();
   },

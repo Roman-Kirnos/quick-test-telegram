@@ -179,7 +179,7 @@ async function endTest(body) {
         throw new Error(`Error in endTest: ${err}`);
       }
     });
-  }, 5 * 1000); // 5 sec
+  }, 3 * 1000); // 3 sec
 }
 
 module.exports = {
