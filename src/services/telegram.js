@@ -164,22 +164,20 @@ async function sendWhoNoAnswered(body) {
 }
 
 async function endTest(body) {
-  setTimeout(async () => {
-    body.statistics.forEach(async user => {
-      try {
-        await bot.telegram.sendMessage(
-          user.participantId,
-          `Тест закінчився! Вітаю ти пройшов до кінця!\n  Правильних відповідей: ${user.true}\n  Всього запитань: ${user.all}\n  Співвідношення правильних до неправильних: ${user.percent}%`,
-        );
+  body.statistics.forEach(async user => {
+    try {
+      await bot.telegram.sendMessage(
+        user.participantId,
+        `Тест закінчився! Вітаю ти пройшов до кінця!\n  Правильних відповідей: ${user.true}\n  Всього запитань: ${user.all}\n  Співвідношення правильних до неправильних: ${user.percent}%`,
+      );
 
-        await handler(user.participantId);
-      } catch (err) {
-        console.log('Error with endTest');
-        console.log(body);
-        throw new Error(`Error in endTest: ${err}`);
-      }
-    });
-  }, 3 * 1000); // 3 sec
+      await handler(user.participantId);
+    } catch (err) {
+      console.log('Error with endTest');
+      console.log(body);
+      throw new Error(`Error in endTest: ${err}`);
+    }
+  });
 }
 
 module.exports = {
