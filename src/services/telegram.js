@@ -165,14 +165,14 @@ async function sendWhoNoAnswered(body) {
 
 async function endTest(body) {
   setTimeout(async () => {
-    body.participants.forEach(async id => {
+    body.statistics.forEach(async user => {
       try {
         await bot.telegram.sendMessage(
-          id,
-          `Тест закінчився! Вітаю ти пройшов до кінця!\n  Правильних відповідей: ${body.statistics[id].true}\n  Всього запитань: ${body.statistics[id].all}\n  Співвідношення правильних до неправильних: ${body.statistics[id].percent}%`,
+          user.participantId,
+          `Тест закінчився! Вітаю ти пройшов до кінця!\n  Правильних відповідей: ${user.true}\n  Всього запитань: ${user.all}\n  Співвідношення правильних до неправильних: ${user.percent}%`,
         );
 
-        await handler(id);
+        await handler(user.participantId);
       } catch (err) {
         console.log('Error with endTest');
         console.log(body);
