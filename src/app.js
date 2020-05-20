@@ -3,14 +3,13 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const helmet = require('helmet');
 
-const bot = require('./telegram/bot');
-const {PORT, BOT_WEBHOOK_CONNECT, SECRET_PATH} = require('./config');
+const {PORT} = require('./config');
 const routers = require('./router');
+const {webhook} = require('./services');
 
 const app = express();
 
-app.use(bot.webhookCallback(SECRET_PATH));
-bot.telegram.setWebhook(BOT_WEBHOOK_CONNECT + SECRET_PATH);
+webhook(app);
 
 app.use(helmet());
 app.use(morgan('dev'));
