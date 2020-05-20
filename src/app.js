@@ -34,6 +34,6 @@ app.use((error, req, res, next) => {
 module.exports = {
   launch: () =>
     app.listen(PORT, () => {
-      console.log(`Example app listening on port ${PORT}!`);
+      console.log(`Server is listening on port: ${PORT}!`);
     }),
 };
