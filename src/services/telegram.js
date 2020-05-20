@@ -2,6 +2,7 @@ const Markup = require('telegraf/markup');
 
 const bot = require('../telegram/bot');
 const redis = require('./redis');
+const {checkCode} = require('./client');
 
 async function handler(ctx) {
   const id = typeof ctx === 'number' ? ctx : ctx.from.id;
@@ -180,6 +181,23 @@ async function endTest(body) {
   });
 }
 
+async function sendToServerForConnectedToGroup(ctx, code = ctx.message.text) {
+  try {
+    const res = await checkCode(
+      code,
+      ctx.message.from.id,
+      ctx.message.from.first_name,
+      ctx.from.last_name,
+    );
+
+    await ctx.reply(
+      `Вас підключено до тесту "${res.data.testTitle}". Кількість запитань: ${res.data.count}. Чекайте початку тесту.`,
+    );
+  } catch (err) {
+    throw new Error(`Error with get res, scene connectionToGroup: ${err}`);
+  }
+}
+
 module.exports = {
   startTest,
   sendQuestionToUsers,
@@ -188,4 +206,5 @@ module.exports = {
   endTest,
   deleteLastMessage,
   handler,
+  sendToServerForConnectedToGroup,
 };

@@ -2,8 +2,7 @@ const WizardScene = require('telegraf/scenes/wizard');
 const Markup = require('telegraf/markup');
 
 const {
-  client: {checkCode},
-  telegram: {deleteLastMessage},
+  telegram: {deleteLastMessage, sendToServerForConnectedToGroup},
 } = require('../../services');
 
 const name = 'connectionToGroup';
@@ -29,20 +28,7 @@ const scene = new WizardScene(
         ctx.message.text === undefined ? ' ' : ctx.message.text,
       )
     ) {
-      try {
-        const res = await checkCode(
-          ctx.message.text,
-          ctx.message.from.id,
-          ctx.message.from.first_name,
-          ctx.from.last_name,
-        );
-
-        await ctx.reply(
-          `Вас підключено до тесту "${res.data.testTitle}". Кількість запитань: ${res.data.count}. Чекайте початку тесту.`,
-        );
-      } catch (err) {
-        throw new Error(`Error with get res, scene connectionToGroup: ${err}`);
-      }
+      await sendToServerForConnectedToGroup(ctx);
 
       return ctx.scene.leave();
     }

@@ -6,7 +6,7 @@ const {stage, stagesArray} = require('./scenes');
 const {
   redis,
   client: {sendAnswerFromUser},
-  telegram: {deleteLastMessage, handler},
+  telegram: {deleteLastMessage, handler, sendToServerForConnectedToGroup},
 } = require('../services');
 
 bot.use(session());
@@ -23,9 +23,21 @@ bot.catch((err, ctx) => {
 bot.start(async ctx => {
   await auth(ctx);
 
-  await ctx.reply('Привіт! Тебе вітає чат-бота для швидкого тесту.');
+  if (
+    /^\/start [a-zA-Z0-9]{6}$/.test(
+      ctx.message.text === undefined ? ' ' : ctx.message.text,
+    )
+  ) {
+    const code = ctx.message.text.split(/ /, 2)[1];
 
-  await handler(ctx.from.id);
+    console.log(code);
+
+    sendToServerForConnectedToGroup(ctx, code);
+  } else {
+    await ctx.reply('Привіт! Тебе вітає чат-бота для швидкого тесту.');
+
+    await handler(ctx.from.id);
+  }
 });
 
 bot.action(

@@ -36,12 +36,13 @@ async function checkCode(code, id, firstName = ' ', lastName = ' ') {
     );
   }
 
-  if (
-    response.data.participant_id === id &&
-    typeof response.data.testTitle === 'string' &&
-    typeof response.data.count === 'number'
-  )
-    return response;
+  if (response.body.message) {
+    await bot.telegram.sendMessage(
+      response.body.participant_id,
+      `Вас уже підключено до тесту "${response.body.testTitle}", кількість запитань: ${response.body.count}.`,
+    );
+  } else return response;
+
   console.log(response);
   throw new Error('Отриман не вірний результат!');
 }
