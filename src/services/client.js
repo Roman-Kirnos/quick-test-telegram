@@ -2,7 +2,7 @@ const axios = require('axios');
 
 const config = require('../config');
 const bot = require('../telegram/bot');
-const handler = require('./telegramFunctions/handler');
+const handler = require('./telegram/handler');
 
 const globalOptions = {
   baseURL: config.MAIN_SERVER_CONNECT,
@@ -28,8 +28,12 @@ async function checkCode(code, id, firstName = ' ', lastName = ' ') {
     console.log('Axios error with checkCode:\n');
     console.log(options);
 
-    await bot.telegram.sendMessage(id, 'Нажаль твій код не дійсний.');
-    await handler(id);
+    try {
+      await bot.telegram.sendMessage(id, 'Нажаль твій код не дійсний.');
+      await handler(id);
+    } catch (error) {
+      throw new Error(`Handler is undefined: ${error}`);
+    }
 
     throw new Error(
       `Такого коду не існує!\n${err} - ${err.response.statusText}`,
@@ -37,14 +41,17 @@ async function checkCode(code, id, firstName = ' ', lastName = ' ') {
   }
 
   if (response.body.message) {
-    await bot.telegram.sendMessage(
-      response.body.participant_id,
-      `Вас уже підключено до тесту "${response.body.testTitle}", кількість запитань: ${response.body.count}.`,
-    );
-  } else return response;
+    try {
+      await bot.telegram.sendMessage(
+        response.body.participant_id,
+        `Вас уже підключено до тесту "${response.body.testTitle}", кількість запитань: ${response.body.count}.`,
+      );
+    } catch (err) {
+      throw new Error(`Send Message to user in the end of checkCode: ${err}`);
+    }
+  }
 
-  console.log(response);
-  throw new Error('Отриман не вірний результат!');
+  return response;
 }
 
 async function sendAnswerFromUser({testId, participantId, questionId, answer}) {

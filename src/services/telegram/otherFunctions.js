@@ -10,11 +10,15 @@ async function deleteLastMessage(chatId, messageId) {
     `deleteLastMessage: { chatId: ${chatId}, messageId: ${messageId} }`,
   );
 
-  await bot.telegram
-    .deleteMessage(Number(chatId), Number(messageId))
-    .catch(err => {
-      throw new Error(`Error with delete message: ${err}`);
-    });
+  try {
+    await bot.telegram
+      .deleteMessage(Number(chatId), Number(messageId))
+      .catch(err => {
+        throw new Error(`Error with delete message: ${err}`);
+      });
+  } catch (err) {
+    throw new Error(`With delete lastMessage: ${err}`);
+  }
 }
 
 function generateArrayRandomNumber(min, max) {
@@ -108,20 +112,19 @@ async function sendQuestionToUsers(usersId, question) {
 
 async function sendAnswersToUsers(body) {
   body.results.forEach(async result => {
+    let message = '';
+
+    result.answers.forEach(answer => {
+      message += answer ? 'Правильна' : 'Не правильна';
+    });
+
     try {
-      let message = '';
-
-      result.answers.forEach(answer => {
-        message += answer ? 'Правильна' : 'Не правильна';
-      });
-
       await bot.telegram.sendMessage(
         result.participants,
         `Відповідь на запитання "${body.title}":\n<i>${message}</i>`,
         {parse_mode: 'HTML'},
       );
     } catch (err) {
-      console.log('Error with sendAnswersToUsers');
       console.log(body);
 
       throw new Error(`Error in sendAnswersToUsers: ${err}`);
@@ -142,7 +145,6 @@ async function sendWhoNoAnswered(body) {
         `Ви не відповіли на запитання: ${body.questionTitle}, в тесті: ${body.testTitle}.`,
       );
     } catch (err) {
-      console.log('Error with sendWhoNoAnswered');
       console.log(body);
 
       throw new Error(`Error in sendWhoNoAnswered: ${err}`);
@@ -160,7 +162,6 @@ async function endTest(body) {
 
       await handler(user.participantId);
     } catch (err) {
-      console.log('Error with endTest');
       console.log(body);
       throw new Error(`Error in endTest: ${err}`);
     }

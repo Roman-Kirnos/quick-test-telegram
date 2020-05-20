@@ -28,7 +28,11 @@ const scene = new WizardScene(
         ctx.message.text === undefined ? ' ' : ctx.message.text,
       )
     ) {
-      await sendToServerForConnectedToGroup(ctx);
+      try {
+        await sendToServerForConnectedToGroup(ctx);
+      } catch (err) {
+        throw new Error(`In scene with check code: ${err}`);
+      }
 
       return ctx.scene.leave();
     }

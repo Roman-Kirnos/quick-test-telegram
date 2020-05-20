@@ -1,8 +1,8 @@
 const redis = require('./redis');
 const client = require('./client');
-const telegram = require('./telegramFunctions/telegram');
-const handler = require('./telegramFunctions/handler');
-const webhook = require('./telegramFunctions/webhook');
+const telegram = require('./telegram/otherFunctions');
+const handler = require('./telegram/handler');
+const webhook = require('./telegram/webhook');
 
 module.exports = {
   redis,
