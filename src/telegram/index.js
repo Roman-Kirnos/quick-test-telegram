@@ -6,7 +6,8 @@ const {stage, stagesArray} = require('./scenes');
 const {
   redis,
   client: {sendAnswerFromUser},
-  telegram: {deleteLastMessage, handler, sendToServerForConnectedToGroup},
+  telegram: {deleteLastMessage, sendToServerForConnectedToGroup},
+  handler,
 } = require('../services');
 
 bot.use(session());

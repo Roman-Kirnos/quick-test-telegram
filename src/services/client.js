@@ -2,7 +2,7 @@ const axios = require('axios');
 
 const config = require('../config');
 const bot = require('../telegram/bot');
-const {handler} = require('./telegram');
+const {handler} = require('./telegramFunctions/handler');
 
 const globalOptions = {
   baseURL: config.MAIN_SERVER_CONNECT,

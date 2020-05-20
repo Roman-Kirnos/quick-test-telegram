@@ -1,23 +1,9 @@
 const Markup = require('telegraf/markup');
 
-const bot = require('../telegram/bot');
-const redis = require('./redis');
-const {checkCode} = require('./client');
-
-async function handler(ctx) {
-  const id = typeof ctx === 'number' ? ctx : ctx.from.id;
-
-  await bot.telegram.sendMessage(
-    id,
-    'Обери кнопку:',
-    Markup.inlineKeyboard([
-      Markup.callbackButton("Під'єднатися до тесту", 'connectionToGroup'),
-    ])
-      .oneTime()
-      .resize()
-      .extra(),
-  );
-}
+const bot = require('../../telegram/bot');
+const redis = require('../redis');
+const {checkCode} = require('../client');
+const handler = require('./handler');
 
 async function deleteLastMessage(chatId, messageId) {
   console.log(
@@ -194,7 +180,7 @@ async function sendToServerForConnectedToGroup(ctx, code = ctx.message.text) {
       `Вас підключено до тесту "${res.data.testTitle}". Кількість запитань: ${res.data.count}. Чекайте початку тесту.`,
     );
   } catch (err) {
-    throw new Error(`Error with get res, scene connectionToGroup: ${err}`);
+    throw new Error(`Error with get res: ${err}`);
   }
 }
 
@@ -205,6 +191,5 @@ module.exports = {
   sendWhoNoAnswered,
   endTest,
   deleteLastMessage,
-  handler,
   sendToServerForConnectedToGroup,
 };
