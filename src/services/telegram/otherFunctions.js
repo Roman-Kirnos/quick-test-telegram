@@ -156,11 +156,11 @@ async function endTest(body) {
   body.statistics.forEach(async user => {
     try {
       await bot.telegram.sendMessage(
-        user.participantId,
+        Number(user.participantId),
         `Тест закінчився! Вітаю ти пройшов до кінця!\n  Правильних відповідей: ${user.true}\n  Всього запитань: ${user.all}\n  Співвідношення правильних до неправильних: ${user.percent}%`,
       );
 
-      await handler(user.participantId);
+      await handler(Number(user.participantId));
     } catch (err) {
       console.log(body);
       throw new Error(`Error in endTest: ${err}`);

@@ -39,7 +39,7 @@ bot.start(auth, async ctx => {
     try {
       await ctx.reply('Привіт! Тебе вітає чат-бота для швидкого тесту.');
 
-      await handler(ctx.from.id);
+      await handler(Number(ctx.from.id));
     } catch (err) {
       throw new Error(`With handler or send message in "/start": ${err}`);
     }

@@ -30,7 +30,7 @@ async function checkCode(code, id, firstName = ' ', lastName = ' ') {
 
     try {
       await bot.telegram.sendMessage(id, 'Нажаль твій код не дійсний.');
-      await handler(id);
+      await handler(Number(id));
     } catch (error) {
       throw new Error(`Handler is undefined: ${error}`);
     }
@@ -40,11 +40,11 @@ async function checkCode(code, id, firstName = ' ', lastName = ' ') {
     );
   }
 
-  if (response.body.message) {
+  if (response.data.message) {
     try {
       await bot.telegram.sendMessage(
-        response.body.participant_id,
-        `Вас уже підключено до тесту "${response.body.testTitle}", кількість запитань: ${response.body.count}.`,
+        response.data.participant_id,
+        `Вас уже підключено до тесту "${response.data.testTitle}", кількість запитань: ${response.data.count}.`,
       );
     } catch (err) {
       throw new Error(`Send Message to user in the end of checkCode: ${err}`);
