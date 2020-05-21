@@ -24,6 +24,19 @@ async function checkCode(code, id, firstName = ' ', lastName = ' ') {
 
   try {
     response = await axios(options);
+
+    if (response.data.message) {
+      try {
+        await bot.telegram.sendMessage(
+          response.data.participant_id,
+          `Вас уже підключено до тесту "${response.data.testTitle}", кількість запитань: ${response.data.count}.`,
+        );
+      } catch (err) {
+        throw new Error(`Send Message to user in the end of checkCode: ${err}`);
+      }
+    }
+
+    return response;
   } catch (err) {
     console.log('Axios error with checkCode:\n');
     console.log(options);
@@ -34,20 +47,9 @@ async function checkCode(code, id, firstName = ' ', lastName = ' ') {
     } catch (error) {
       throw new Error(`Handler is undefined: ${error}`);
     }
-  }
 
-  if (response.data.message) {
-    try {
-      await bot.telegram.sendMessage(
-        response.data.participant_id,
-        `Вас уже підключено до тесту "${response.data.testTitle}", кількість запитань: ${response.data.count}.`,
-      );
-    } catch (err) {
-      throw new Error(`Send Message to user in the end of checkCode: ${err}`);
-    }
+    return err;
   }
-
-  return response;
 }
 
 async function sendAnswerFromUser({testId, participantId, questionId, answer}) {
