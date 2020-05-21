@@ -4,8 +4,8 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 
 const {PORT} = require('./config');
-const routers = require('./router');
-const {webhook} = require('./services');
+const router = require('./router');
+const {webhook, checkAuthToken} = require('./services');
 
 const app = express();
 
@@ -17,7 +17,11 @@ app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.use('/quicktest', routers);
+app.use('/quicktest', checkAuthToken, router);
+
+app.get('', async (req, res) => {
+  res.status(200).send('Server is working now.');
+});
 
 // eslint-disable-next-line no-unused-vars
 app.use((error, req, res, next) => {

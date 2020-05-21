@@ -3,6 +3,7 @@ const client = require('./client');
 const telegram = require('./telegram/otherFunctions');
 const handler = require('./telegram/handler');
 const webhook = require('./telegram/webhook');
+const {checkAuthToken} = require('./server');
 
 module.exports = {
   redis,
@@ -10,4 +11,5 @@ module.exports = {
   telegram,
   handler,
   webhook,
+  checkAuthToken,
 };

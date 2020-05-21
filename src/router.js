@@ -2,7 +2,11 @@ const router = require('express').Router();
 
 const {telegram} = require('./services');
 
-router.post('/launchtest', async (req, res) => {
+router.get('', async (req, res) => {
+  res.status(200).send('Server is working now.');
+});
+
+router.post('quicktest/launchtest', async (req, res) => {
   try {
     await telegram.startTest(req.body.participants_id, 5);
   } catch (err) {
@@ -14,7 +18,7 @@ router.post('/launchtest', async (req, res) => {
   res.status(200).send('OK');
 });
 
-router.post('/question', async (req, res) => {
+router.post('quicktest/question', async (req, res) => {
   try {
     await telegram.sendQuestionToUsers(
       req.body.participants_id,
