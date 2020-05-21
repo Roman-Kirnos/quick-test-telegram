@@ -177,9 +177,11 @@ async function sendToServerForConnectedToGroup(ctx, code = ctx.message.text) {
       ctx.from.last_name,
     );
 
-    await ctx.reply(
-      `Вас підключено до тесту "${res.data.testTitle}". Кількість запитань: ${res.data.count}. Чекайте початку тесту.`,
-    );
+    if (res) {
+      await ctx.reply(
+        `Вас підключено до тесту "${res.data.testTitle}". Кількість запитань: ${res.data.count}. Чекайте початку тесту.`,
+      );
+    }
   } catch (err) {
     throw new Error(`Error with get res: ${err}`);
   }

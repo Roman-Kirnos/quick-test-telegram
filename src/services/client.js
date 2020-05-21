@@ -11,7 +11,6 @@ const globalOptions = {
 
 async function checkCode(code, id, firstName = ' ', lastName = ' ') {
   const options = globalOptions;
-  let response;
 
   options.method = 'post';
   options.url = '/api/quicktest/bot/student';
@@ -23,7 +22,7 @@ async function checkCode(code, id, firstName = ' ', lastName = ' ') {
   };
 
   try {
-    response = await axios(options);
+    const response = await axios(options);
 
     if (response.data.message) {
       try {
@@ -48,7 +47,7 @@ async function checkCode(code, id, firstName = ' ', lastName = ' ') {
       throw new Error(`Handler is undefined: ${error}`);
     }
 
-    return err;
+    return 0;
   }
 }
 
