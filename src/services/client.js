@@ -34,10 +34,6 @@ async function checkCode(code, id, firstName = ' ', lastName = ' ') {
     } catch (error) {
       throw new Error(`Handler is undefined: ${error}`);
     }
-
-    throw new Error(
-      `Такого коду не існує!\n${err} - ${err.response.statusText}`,
-    );
   }
 
   if (response.data.message) {
