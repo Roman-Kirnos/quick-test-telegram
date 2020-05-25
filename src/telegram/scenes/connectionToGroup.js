@@ -39,7 +39,7 @@ const scene = new WizardScene(
 
     try {
       await ctx.reply(
-        'Неправильно введено код! Виберіть дію:',
+        'Не правильно введено код! Виберіть дію:',
         Markup.inlineKeyboard([
           Markup.callbackButton('Спробувати ще', name),
           Markup.callbackButton('До меню', 'mainMenu'),
