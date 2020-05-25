@@ -114,14 +114,14 @@ async function sendAnswersToUsers(body) {
   body.results.forEach(async result => {
     let message = '';
 
-    result.answers.forEach(answer => {
-      message += answer ? 'Правильна' : 'Не правильна';
-    });
+    message += result.answer ? 'Правильна' : 'Не правильна';
 
     try {
       await bot.telegram.sendMessage(
         result.participants,
-        `Відповідь на запитання "${body.title}":\n<i>${message}</i>`,
+        `Відповідь на запитання "${body.title}":\n<i>${message}</i>${
+          result.phrase ? `\n${result.phrase}` : ''
+        }`,
         {parse_mode: 'HTML'},
       );
     } catch (err) {

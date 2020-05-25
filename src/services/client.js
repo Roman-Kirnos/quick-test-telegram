@@ -30,12 +30,11 @@ async function checkCode(code, id, firstName = ' ', lastName = ' ') {
           response.data.participant_id,
           `Вас уже підключено до тесту "${response.data.testTitle}", кількість запитань: ${response.data.count}.`,
         );
+        return 0;
       } catch (err) {
         throw new Error(`Send Message to user in the end of checkCode: ${err}`);
       }
-    }
-
-    return response;
+    } else return response;
   } catch (err) {
     console.log('Axios error with checkCode:\n');
     console.log(options);

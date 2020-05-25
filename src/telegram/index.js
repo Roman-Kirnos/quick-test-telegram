@@ -81,7 +81,7 @@ bot.on('callback_query', async ctx => {
       testId: data.testId,
       participantId: ctx.from.id,
       questionId: data.questionId,
-      answer: [data.answerId],
+      answer: data.answerId,
     });
 
     await ctx.reply('Відповідь прийнята, будь ласка зачекайте');
