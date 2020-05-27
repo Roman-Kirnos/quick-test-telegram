@@ -1,6 +1,16 @@
 const router = require('express').Router();
 
-const {telegram} = require('./services');
+const {
+  telegram: {
+    functionsForServer: {
+      startTest,
+      sendQuestionToUsers,
+      sendAnswersToUsers,
+      sendWhoNoAnswered,
+      endTest,
+    },
+  },
+} = require('./services');
 
 router.get('', async (req, res) => {
   res.status(200).send('Server is working now.');
@@ -8,7 +18,7 @@ router.get('', async (req, res) => {
 
 router.post('/launchtest', async (req, res) => {
   try {
-    await telegram.startTest(req.body.participants_id, 5);
+    await startTest(req.body.participants_id, 5);
   } catch (err) {
     res.status(500).send(`Error with '/launchtest', can't start test: ${err}`);
 
@@ -20,10 +30,7 @@ router.post('/launchtest', async (req, res) => {
 
 router.post('/question', async (req, res) => {
   try {
-    await telegram.sendQuestionToUsers(
-      req.body.participants_id,
-      req.body.question,
-    );
+    await sendQuestionToUsers(req.body.participants_id, req.body.question);
   } catch (err) {
     res
       .status(500)
@@ -37,7 +44,7 @@ router.post('/question', async (req, res) => {
 
 router.post('/question/result', async (req, res) => {
   try {
-    await telegram.sendAnswersToUsers(req.body);
+    await sendAnswersToUsers(req.body);
   } catch (err) {
     res
       .status(500)
@@ -53,7 +60,7 @@ router.post('/question/result', async (req, res) => {
 
 router.post('/question/noresult', async (req, res) => {
   try {
-    await telegram.sendWhoNoAnswered(req.body);
+    await sendWhoNoAnswered(req.body);
   } catch (err) {
     res
       .status(500)
@@ -71,7 +78,7 @@ router.post('/question/noresult', async (req, res) => {
 
 router.post('/question/end', async (req, res) => {
   try {
-    await telegram.endTest(req.body);
+    await endTest(req.body);
   } catch (err) {
     res
       .status(500)

@@ -2,7 +2,9 @@ const WizardScene = require('telegraf/scenes/wizard');
 const Markup = require('telegraf/markup');
 
 const {
-  telegram: {deleteLastMessage, sendToServerForConnectedToGroup},
+  telegram: {
+    otherFunctions: {deleteLastMessage, sendToServerForConnectedToGroup},
+  },
 } = require('../../services');
 
 const name = 'connectionToGroup';

@@ -5,7 +5,10 @@ const helmet = require('helmet');
 
 const {PORT} = require('./config');
 const router = require('./router');
-const {webhook, checkAuthToken} = require('./services');
+const {
+  telegram: {webhook},
+  checkAuthToken,
+} = require('./services');
 
 const app = express();
 
