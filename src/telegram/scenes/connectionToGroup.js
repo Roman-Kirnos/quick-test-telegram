@@ -17,11 +17,15 @@ const scene = new WizardScene(
         ctx.update.callback_query.message.chat.id,
         ctx.update.callback_query.message.message_id,
       );
-
-      await ctx.reply('Введіть код для підключення до тесту:');
     } catch (err) {
-      throw new Error(`Error with delete message in connectionToGroup: ${err}`);
+      console.log(`With delete message in connectionToGroup: ${err}`);
+      console.log(
+        `Chat_id: ${ctx.update.callback_query.message.chat.id}, message_id: ${ctx.update.callback_query.message.message_id}`,
+      );
     }
+
+    await ctx.reply('Введіть код для підключення до тесту:');
+
     return ctx.wizard.next();
   },
   async ctx => {

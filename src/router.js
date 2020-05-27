@@ -20,7 +20,7 @@ router.post('/launchtest', async (req, res) => {
   try {
     await startTest(req.body.participants_id, 5);
   } catch (err) {
-    res.status(500).send(`Error with '/launchtest', can't start test: ${err}`);
+    res.status(400).send(`Error with '/launchtest', can't start test: ${err}`);
 
     throw new Error(`Error with startTest, in 'Router': ${err}`);
   }
@@ -33,7 +33,7 @@ router.post('/question', async (req, res) => {
     await sendQuestionToUsers(req.body.participants_id, req.body.question);
   } catch (err) {
     res
-      .status(500)
+      .status(400)
       .send(`Error with '/question', can't send question to users: ${err}`);
 
     throw new Error(`Error with send questions to users, in 'Router': ${err}`);
@@ -47,7 +47,7 @@ router.post('/question/result', async (req, res) => {
     await sendAnswersToUsers(req.body);
   } catch (err) {
     res
-      .status(500)
+      .status(400)
       .send(
         `Error with '/question/result', can't send answer to users: ${err}`,
       );
@@ -63,7 +63,7 @@ router.post('/question/noresult', async (req, res) => {
     await sendWhoNoAnswered(req.body);
   } catch (err) {
     res
-      .status(500)
+      .status(400)
       .send(
         `Error with '/question/noresult', can't send to users who no answered: ${err}`,
       );
@@ -81,7 +81,7 @@ router.post('/question/end', async (req, res) => {
     await endTest(req.body);
   } catch (err) {
     res
-      .status(500)
+      .status(400)
       .send(
         `Error with '/question/end', can't send to users about end test: ${err}`,
       );

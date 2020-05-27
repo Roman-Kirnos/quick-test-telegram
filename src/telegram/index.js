@@ -53,12 +53,17 @@ bot.action(
   async (ctx, next) => {
     try {
       await ctx.answerCbQuery();
-
-      await deleteLastMessage(
-        ctx.update.callback_query.message.chat.id,
-        ctx.update.callback_query.message.message_id,
-      );
-
+      try {
+        await deleteLastMessage(
+          ctx.update.callback_query.message.chat.id,
+          ctx.update.callback_query.message.message_id,
+        );
+      } catch (err) {
+        console.log(`With delete message in 'mainMenu': ${err}`);
+        console.log(
+          `Chat_id: ${ctx.update.callback_query.message.chat.id}, message_id: ${ctx.update.callback_query.message.message_id}`,
+        );
+      }
       await next(ctx);
     } catch (err) {
       throw new Error(`With action 'mainMenu': ${err}`);
@@ -73,11 +78,19 @@ bot.on('callback_query', async ctx => {
 
     await ctx.answerCbQuery();
 
-    await redis.deleteUserMessageId(ctx.from.id);
-    await deleteLastMessage(
-      ctx.from.id,
-      ctx.update.callback_query.message.message_id,
-    );
+    try {
+      await redis.deleteUserMessageId(ctx.from.id);
+
+      await deleteLastMessage(
+        ctx.from.id,
+        ctx.update.callback_query.message.message_id,
+      );
+    } catch (err) {
+      ctx.reply('Вибач, але я не зміг прийдняти твою відповідь.');
+      throw new Error(
+        `With delete message in 'callback_query': ${err}.\n  Chat_id: ${ctx.from.id}, message_id: ${ctx.update.callback_query.message.message_id}`,
+      );
+    }
 
     await sendAnswerFromUser({
       testId: data.testId,
