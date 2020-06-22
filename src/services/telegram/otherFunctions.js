@@ -2,6 +2,7 @@ const Markup = require('telegraf/markup');
 
 const bot = require('../../telegram/bot');
 const {checkCode} = require('../client');
+const i18n = require('../../config/i18n.config.js');
 
 async function deleteLastMessage(chatId, messageId) {
   console.log(
@@ -30,7 +31,7 @@ async function sendToServerForConnectedToGroup(ctx, code = ctx.message.text) {
 
     if (res) {
       await ctx.reply(
-        `Вас підключено до тесту "${res.data.testTitle}". Кількість запитань: ${res.data.count}. Чекайте початку тесту.`,
+        i18n.t(i18n.currentLocale, 'connected_to_test', {data: res.data}),
       );
     }
   } catch (err) {

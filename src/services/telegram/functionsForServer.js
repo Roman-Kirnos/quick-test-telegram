@@ -4,13 +4,14 @@ const redis = require('../redis');
 const handler = require('./handler');
 const bot = require('../../telegram/bot');
 const {deleteLastMessage, getArrayRandomButtons} = require('./otherFunctions');
+const i18n = require('../../config/i18n.config.js');
 
 async function startTest(usersId, timeAfterStart = 5) {
   usersId.forEach(async id => {
     try {
       await bot.telegram.sendMessage(
         id,
-        `Тест почався. Запитання прийдуть через ${timeAfterStart} секунд.`,
+        i18n.t(i18n.currentLocale, 'start_test', {time: timeAfterStart}),
       );
     } catch (err) {
       console.log(`Error with startTest: { usersId: ${usersId} }`);
@@ -33,7 +34,13 @@ async function sendQuestionToUsers(usersId, question) {
 
       const message = await bot.telegram.sendMessage(
         id,
-        `Запитання №${question.actualQuestion} з ${question.allQuestions}:\n${question.title}:\n ${question.subtitle}?\nВ тебе є ${question.timeout} секунд.`,
+        i18n.t(i18n.currentLocale, 'question', {
+          actualQuestion: question.actualQuestion,
+          allQuestions: question.allQuestions,
+          title: question.title,
+          subtitle: question.subtitle,
+          timeout: question.timeout,
+        }),
         Markup.inlineKeyboard(markupButtons)
           .resize()
           .oneTime()
@@ -53,16 +60,16 @@ async function sendQuestionToUsers(usersId, question) {
 
 async function sendAnswersToUsers(body) {
   body.results.forEach(async result => {
-    let message = '';
-
-    message += result.answer ? 'Правильна' : 'Не правильна';
-
     try {
       await bot.telegram.sendMessage(
         result.participants,
-        `Відповідь на запитання "${body.title}":\n<i>${message}</i>${
-          result.phrase ? `\n${result.phrase}` : ''
-        }`,
+        i18n.t(i18n.currentLocale, 'answer', {
+          resultAnswer: result.answer
+            ? i18n.t(i18n.currentLocale, 'right_answer')
+            : i18n.t(i18n.currentLocale, 'wrong_answer'),
+          bodyTitle: body.title,
+          resultPhrase: result.phrase ? `\n${result.phrase}` : '',
+        }),
         {parse_mode: 'HTML'},
       );
     } catch (err) {
@@ -83,7 +90,7 @@ async function sendWhoNoAnswered(body) {
 
       await bot.telegram.sendMessage(
         id,
-        `Ви не відповіли на запитання: ${body.questionTitle}, в тесті: ${body.testTitle}.`,
+        i18n.t(i18n.currentLocale, 'no_answered', {body}),
       );
     } catch (err) {
       console.log(body);
@@ -98,7 +105,7 @@ async function endTest(body) {
     try {
       await bot.telegram.sendMessage(
         Number(user.participantId),
-        `Тест закінчився! Вітаю ти пройшов до кінця!\n  Правильних відповідей: ${user.true}\n  Всього запитань: ${user.all}\n  Співвідношення правильних до неправильних: ${user.percent}%`,
+        i18n.t(i18n.currentLocale, 'end_test', {user}),
       );
 
       await handler(Number(user.participantId));

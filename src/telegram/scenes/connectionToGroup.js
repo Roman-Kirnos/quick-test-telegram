@@ -6,6 +6,8 @@ const {
     otherFunctions: {deleteLastMessage, sendToServerForConnectedToGroup},
   },
 } = require('../../services');
+const {REG_EXP_CHECK_CODE} = require('../../config');
+const i18n = require('../../config/i18n.config.js');
 
 const name = 'connectionToGroup';
 
@@ -24,13 +26,13 @@ const scene = new WizardScene(
       );
     }
 
-    await ctx.reply('Введіть код для підключення до тесту:');
+    await ctx.reply(i18n.t(i18n.currentLocale, 'enter_code'));
 
     return ctx.wizard.next();
   },
   async ctx => {
     if (
-      /^[a-zA-Z0-9]{6}$/.test(
+      REG_EXP_CHECK_CODE.test(
         ctx.message.text === undefined ? ' ' : ctx.message.text,
       )
     ) {
@@ -45,10 +47,13 @@ const scene = new WizardScene(
 
     try {
       await ctx.reply(
-        'Не правильно введено код! Виберіть дію:',
+        i18n.t(i18n.currentLocale, 'choice_action_if_code_incorrect'),
         Markup.inlineKeyboard([
-          Markup.callbackButton('Спробувати ще', name),
-          Markup.callbackButton('До меню', 'mainMenu'),
+          Markup.callbackButton(i18n.t(i18n.currentLocale, 'try_again'), name),
+          Markup.callbackButton(
+            i18n.t(i18n.currentLocale, 'go_to_menu'),
+            'mainMenu',
+          ),
         ])
           .oneTime()
           .extra(),

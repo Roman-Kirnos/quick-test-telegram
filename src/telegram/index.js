@@ -11,9 +11,12 @@ const {
     otherFunctions: {deleteLastMessage, sendToServerForConnectedToGroup},
   },
 } = require('../services');
+const {IN_START_REG_EXP_CHECK_CODE} = require('../config');
+const i18n = require('../config/i18n.config.js');
 
 bot.use(session());
 bot.use(stage.middleware());
+bot.use(i18n.middleware());
 
 stagesArray.forEach(scene =>
   bot.action(scene.name, ctx => ctx.scene.enter(scene.name)),
@@ -25,7 +28,7 @@ bot.catch((err, ctx) => {
 
 bot.start(auth, async ctx => {
   if (
-    /^\/start [a-zA-Z0-9]{6}$/.test(
+    IN_START_REG_EXP_CHECK_CODE.test(
       ctx.message.text === undefined ? ' ' : ctx.message.text,
     )
   ) {
@@ -39,7 +42,7 @@ bot.start(auth, async ctx => {
     }
   } else {
     try {
-      await ctx.reply('Привіт! Тебе вітає чат-бота для швидкого тесту.');
+      await ctx.reply(ctx.i18n.t('start_menu'));
 
       await handler(Number(ctx.from.id));
     } catch (err) {
@@ -86,7 +89,6 @@ bot.on('callback_query', async ctx => {
         ctx.update.callback_query.message.message_id,
       );
     } catch (err) {
-      ctx.reply('Вибач, але я не зміг прийдняти твою відповідь.');
       throw new Error(
         `With delete message in 'callback_query': ${err}.\n  Chat_id: ${ctx.from.id}, message_id: ${ctx.update.callback_query.message.message_id}`,
       );
@@ -99,7 +101,7 @@ bot.on('callback_query', async ctx => {
       answer: data.answerId,
     });
 
-    await ctx.reply('Відповідь прийнята, будь ласка зачекайте');
+    await ctx.reply(ctx.i18n.t('got_answer'));
   } catch (err) {
     throw new Error(
       `With parse or get, or send answer to server, 'callback_query': ${err}`,

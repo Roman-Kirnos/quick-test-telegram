@@ -1,0 +1,20 @@
+{
+  "start_menu": "Привіт! Тебе вітає чат-бота для швидкого тесту.",
+  "select_button": "Обери кнопку:",
+  "connection_to_group": "Під'єднатися до тесту",
+  "connected_to_test": "Вас підключено до тесту \"${data.testTitle}\". Кількість запитань: ${data.count}. Чекайте початку тесту.",
+  "already_connected": "Вас уже підключено до тесту \"${data.testTitle}\", кількість запитань: ${data.count}.",
+  "code_is_invalid": "Нажаль твій код не дійсний.",
+  "enter_code": "Введіть код для підключення до тесту:",
+  "choice_action_if_code_incorrect": "Не правильно введено код! Виберіть дію:",
+  "try_again": "Спробувати ще",
+  "go_to_menu": "До меню",
+  "start_test": "Тест почався. Запитання прийдуть через ${time} секунд.",
+  "question": "Запитання №${actualQuestion} з ${allQuestions}:\n${title}:\n ${subtitle}?\nВ тебе є ${timeout} секунд.",
+  "answer": "Відповідь на запитання '${bodyTitle}':\n<i>${resultAnswer}</i>${resultPhrase}",
+  "right_answer": "Правильна",
+  "wrong_answer": "Не правильна",
+  "got_answer": "Відповідь прийнята, будь ласка зачекайте",
+  "no_answered": "Ви не відповіли на запитання: ${body.questionTitle}, в тесті: ${body.testTitle}.",
+  "end_test": "Тест закінчився! Вітаю ти пройшов до кінця!\n  Правильних відповідей: ${user.true}\n  Всього запитань: ${user.all}\n  Співвідношення правильних до неправильних: ${user.percent}%"
+}
