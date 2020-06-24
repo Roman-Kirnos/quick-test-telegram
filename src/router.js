@@ -11,6 +11,7 @@ const {
     },
   },
 } = require('./services');
+const log = require('./logger')(__filename);
 
 router.get('', async (req, res) => {
   res.status(200).send('Server is working now.');
@@ -19,10 +20,12 @@ router.get('', async (req, res) => {
 router.post('/launchtest', async (req, res) => {
   try {
     await startTest(req.body.participants_id, 5);
-  } catch (err) {
-    res.status(400).send(`Error with '/launchtest', can't start test: ${err}`);
+  } catch (error) {
+    res
+      .status(400)
+      .send(`Error with '/launchtest', can't start test: ${error}`);
 
-    throw new Error(`Error with startTest, in 'Router': ${err}`);
+    log.error({error}, '/launchtest');
   }
 
   res.status(200).send('OK');
@@ -31,12 +34,12 @@ router.post('/launchtest', async (req, res) => {
 router.post('/question', async (req, res) => {
   try {
     await sendQuestionToUsers(req.body.participants_id, req.body.question);
-  } catch (err) {
+  } catch (error) {
     res
       .status(400)
-      .send(`Error with '/question', can't send question to users: ${err}`);
+      .send(`Error with '/question', can't send question to users: ${error}`);
 
-    throw new Error(`Error with send questions to users, in 'Router': ${err}`);
+    log.error({error}, '/question');
   }
 
   res.status(200).send('OK');
@@ -45,14 +48,14 @@ router.post('/question', async (req, res) => {
 router.post('/question/result', async (req, res) => {
   try {
     await sendAnswersToUsers(req.body);
-  } catch (err) {
+  } catch (error) {
     res
       .status(400)
       .send(
-        `Error with '/question/result', can't send answer to users: ${err}`,
+        `Error with '/question/result', can't send answer to users: ${error}`,
       );
 
-    throw new Error(`Error with send results to users, in 'Router': ${err}`);
+    log.error({error}, '/question/result');
   }
 
   res.status(200).send('OK');
@@ -61,16 +64,14 @@ router.post('/question/result', async (req, res) => {
 router.post('/question/noresult', async (req, res) => {
   try {
     await sendWhoNoAnswered(req.body);
-  } catch (err) {
+  } catch (error) {
     res
       .status(400)
       .send(
-        `Error with '/question/noresult', can't send to users who no answered: ${err}`,
+        `Error with '/question/noresult', can't send to users who no answered: ${error}`,
       );
 
-    throw new Error(
-      `Error with send who no result to users, in 'Router': ${err}`,
-    );
+    log.error({error}, '/question/noresult');
   }
 
   res.status(200).send('OK');
@@ -79,16 +80,14 @@ router.post('/question/noresult', async (req, res) => {
 router.post('/question/end', async (req, res) => {
   try {
     await endTest(req.body);
-  } catch (err) {
+  } catch (error) {
     res
       .status(400)
       .send(
-        `Error with '/question/end', can't send to users about end test: ${err}`,
+        `Error with '/question/end', can't send to users about end test: ${error}`,
       );
 
-    throw new Error(
-      `Error with send about end of the test to users, in 'Router': ${err}`,
-    );
+    log.error({error}, '/question/end');
   }
 
   res.status(200).send('OK');

@@ -4,6 +4,7 @@ const config = require('../config');
 const bot = require('../telegram/bot');
 const handler = require('./telegram/handler');
 const i18n = require('../config/i18n.config.js');
+const log = require('../logger')(__filename);
 
 const globalOptions = {
   baseURL: config.MAIN_SERVER_CONNECT,
@@ -29,20 +30,14 @@ async function checkCode(code, id, firstName = ' ', lastName = ' ') {
       return response;
     }
 
-    try {
-      await bot.telegram.sendMessage(
-        response.data.participant_id,
-        i18n.t(i18n.currentLocale, 'already_connected', {
-          data: response.data,
-        }),
-      );
-      return 0;
-    } catch (err) {
-      throw new Error(`Send Message to user in the end of checkCode: ${err}`);
-    }
-  } catch (err) {
-    console.log('Axios error with checkCode:\n');
-    console.log(options);
+    await bot.telegram.sendMessage(
+      response.data.participant_id,
+      i18n.t(i18n.currentLocale, 'already_connected', {
+        data: response.data,
+      }),
+    );
+  } catch (error) {
+    log.error({error, options}, 'checkCode');
 
     try {
       await bot.telegram.sendMessage(
@@ -50,12 +45,11 @@ async function checkCode(code, id, firstName = ' ', lastName = ' ') {
         i18n.t(i18n.currentLocale, 'code_is_invalid'),
       );
       await handler(Number(id));
-    } catch (error) {
-      throw new Error(`Handler is undefined: ${error}`);
+    } catch (err) {
+      log.error({error: err, id}, 'checkCode: code_is_invalid');
     }
-
-    return 0;
   }
+  return 0;
 }
 
 async function sendAnswerFromUser({testId, participantId, questionId, answer}) {
@@ -72,11 +66,8 @@ async function sendAnswerFromUser({testId, participantId, questionId, answer}) {
 
   try {
     await axios(options);
-  } catch (err) {
-    console.log('Axios error with sendAnswerFromUser:\n');
-    console.log(options);
-
-    throw new Error(`The answer was sent incorrectly!\n${err.message}`);
+  } catch (error) {
+    log.error({error, options}, 'checsendAnswerFromUserkCode');
   }
 }
 

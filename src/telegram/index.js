@@ -13,6 +13,7 @@ const {
 } = require('../services');
 const {IN_START_REG_EXP_CHECK_CODE} = require('../config');
 const i18n = require('../config/i18n.config.js');
+const log = require('../logger')(__filename);
 
 bot.use(session());
 bot.use(stage.middleware());
@@ -22,8 +23,8 @@ stagesArray.forEach(scene =>
   bot.action(scene.name, ctx => ctx.scene.enter(scene.name)),
 );
 
-bot.catch((err, ctx) => {
-  console.log(`Ooops, encountered an error for ${ctx.updateType}`, err);
+bot.catch((error, ctx) => {
+  log.error({error, ctx}, 'Something bot error!');
 });
 
 bot.start(auth, async ctx => {
@@ -34,19 +35,18 @@ bot.start(auth, async ctx => {
   ) {
     const code = ctx.message.text.split(/ /, 2)[1];
 
-    console.log(ctx.message.text);
     try {
       await sendToServerForConnectedToGroup(ctx, code);
-    } catch (err) {
-      throw new Error(`With check code in "/start code": ${err}`);
+    } catch (error) {
+      log.error({error}, '/start: sendToServerForConnectedToGroup');
     }
   } else {
     try {
       await ctx.reply(ctx.i18n.t('start_menu'));
 
       await handler(Number(ctx.from.id));
-    } catch (err) {
-      throw new Error(`With handler or send message in "/start": ${err}`);
+    } catch (error) {
+      log.error({error}, '/start');
     }
   }
 });
@@ -61,15 +61,12 @@ bot.action(
           ctx.update.callback_query.message.chat.id,
           ctx.update.callback_query.message.message_id,
         );
-      } catch (err) {
-        console.log(`With delete message in 'mainMenu': ${err}`);
-        console.log(
-          `Chat_id: ${ctx.update.callback_query.message.chat.id}, message_id: ${ctx.update.callback_query.message.message_id}`,
-        );
+      } catch (error) {
+        log.error({error}, 'mainMenu: deleteLastMessage');
       }
       await next(ctx);
-    } catch (err) {
-      throw new Error(`With action 'mainMenu': ${err}`);
+    } catch (error) {
+      log.error({error}, 'mainMenu');
     }
   },
   handler,
@@ -88,9 +85,14 @@ bot.on('callback_query', async ctx => {
         ctx.from.id,
         ctx.update.callback_query.message.message_id,
       );
-    } catch (err) {
-      throw new Error(
-        `With delete message in 'callback_query': ${err}.\n  Chat_id: ${ctx.from.id}, message_id: ${ctx.update.callback_query.message.message_id}`,
+    } catch (error) {
+      log.error(
+        {
+          error,
+          id: ctx.from.id,
+          message_id: ctx.update.callback_query.message.message_id,
+        },
+        'callback_query: deleteLastMessage',
       );
     }
 
@@ -102,10 +104,8 @@ bot.on('callback_query', async ctx => {
     });
 
     await ctx.reply(ctx.i18n.t('got_answer'));
-  } catch (err) {
-    throw new Error(
-      `With parse or get, or send answer to server, 'callback_query': ${err}`,
-    );
+  } catch (error) {
+    log.error({error}, 'callback_query');
   }
 });
 

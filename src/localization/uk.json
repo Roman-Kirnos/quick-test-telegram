@@ -10,7 +10,7 @@
   "try_again": "Спробувати ще",
   "go_to_menu": "До меню",
   "start_test": "Тест почався. Запитання прийдуть через ${time} секунд.",
-  "question": "Запитання №${actualQuestion} з ${allQuestions}:\n${title}:\n ${subtitle}?\nВ тебе є ${timeout} секунд.",
+  "question": "Запитання №${question.actualQuestion} з ${question.allQuestions}:\n${question.title}:\n ${question.subtitle}?\nВ тебе є ${question.timeout} секунд.",
   "answer": "Відповідь на запитання '${bodyTitle}':\n<i>${resultAnswer}</i>${resultPhrase}",
   "right_answer": "Правильна",
   "wrong_answer": "Не правильна",

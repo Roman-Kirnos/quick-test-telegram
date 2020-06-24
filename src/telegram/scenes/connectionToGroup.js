@@ -8,6 +8,7 @@ const {
 } = require('../../services');
 const {REG_EXP_CHECK_CODE} = require('../../config');
 const i18n = require('../../config/i18n.config.js');
+const log = require('../../logger')(__filename);
 
 const name = 'connectionToGroup';
 
@@ -19,11 +20,8 @@ const scene = new WizardScene(
         ctx.update.callback_query.message.chat.id,
         ctx.update.callback_query.message.message_id,
       );
-    } catch (err) {
-      console.log(`With delete message in connectionToGroup: ${err}`);
-      console.log(
-        `Chat_id: ${ctx.update.callback_query.message.chat.id}, message_id: ${ctx.update.callback_query.message.message_id}`,
-      );
+    } catch (error) {
+      log({error}, 'connectionToGroup: deleteLastMessage');
     }
 
     await ctx.reply(i18n.t(i18n.currentLocale, 'enter_code'));
@@ -38,8 +36,11 @@ const scene = new WizardScene(
     ) {
       try {
         await sendToServerForConnectedToGroup(ctx);
-      } catch (err) {
-        throw new Error(`In scene with check code: ${err}`);
+      } catch (error) {
+        log.error(
+          {error},
+          'connectionToGroup: sendToServerForConnectedToGroup',
+        );
       }
 
       return ctx.scene.leave();
@@ -58,8 +59,8 @@ const scene = new WizardScene(
           .oneTime()
           .extra(),
       );
-    } catch (err) {
-      throw new Error(`Error with send buttons in scene: ${err}`);
+    } catch (error) {
+      log.error({error}, 'connectionToGroup: choice_action_if_code_incorrect');
     }
 
     return ctx.scene.leave();

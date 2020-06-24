@@ -3,21 +3,14 @@ const Markup = require('telegraf/markup');
 const bot = require('../../telegram/bot');
 const {checkCode} = require('../client');
 const i18n = require('../../config/i18n.config.js');
+const log = require('../../logger')(__filename);
 
 async function deleteLastMessage(chatId, messageId) {
-  console.log(
-    `deleteLastMessage: { chatId: ${chatId}, messageId: ${messageId} }`,
-  );
-
-  try {
-    await bot.telegram
-      .deleteMessage(Number(chatId), Number(messageId))
-      .catch(err => {
-        throw new Error(`Error with delete message: ${err}`);
-      });
-  } catch (err) {
-    throw new Error(`With delete lastMessage: ${err}`);
-  }
+  await bot.telegram
+    .deleteMessage(Number(chatId), Number(messageId))
+    .catch(error => {
+      log.error({error, chatId, messageId}, 'deleteLastMessage');
+    });
 }
 
 async function sendToServerForConnectedToGroup(ctx, code = ctx.message.text) {
@@ -34,8 +27,8 @@ async function sendToServerForConnectedToGroup(ctx, code = ctx.message.text) {
         i18n.t(i18n.currentLocale, 'connected_to_test', {data: res.data}),
       );
     }
-  } catch (err) {
-    throw new Error(`Error with get res: ${err}`);
+  } catch (error) {
+    log.error({error}, 'sendToServerForConnectedToGroup');
   }
 }
 
@@ -64,10 +57,11 @@ function generateArrayRandomNumber(min, max) {
 }
 
 function getArrayRandomButtons(question) {
-  const markupButtons = [];
-
-  generateArrayRandomNumber(0, question.answers.length - 1).forEach(number => {
-    markupButtons.push([
+  const markupButtons = generateArrayRandomNumber(
+    0,
+    question.answers.length - 1,
+  ).map(number => {
+    return [
       Markup.callbackButton(
         question.answers[number].title,
         JSON.stringify({
@@ -76,7 +70,7 @@ function getArrayRandomButtons(question) {
           testId: question.testId,
         }),
       ),
-    ]);
+    ];
   });
 
   return markupButtons;

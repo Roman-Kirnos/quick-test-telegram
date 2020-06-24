@@ -5,6 +5,7 @@ const handler = require('./handler');
 const bot = require('../../telegram/bot');
 const {deleteLastMessage, getArrayRandomButtons} = require('./otherFunctions');
 const i18n = require('../../config/i18n.config.js');
+const log = require('../../logger')(__filename);
 
 async function startTest(usersId, timeAfterStart = 5) {
   usersId.forEach(async id => {
@@ -13,17 +14,13 @@ async function startTest(usersId, timeAfterStart = 5) {
         id,
         i18n.t(i18n.currentLocale, 'start_test', {time: timeAfterStart}),
       );
-    } catch (err) {
-      console.log(`Error with startTest: { usersId: ${usersId} }`);
-
-      throw new Error(
-        `Error with startTest\nCannot send message to user ${err}`,
-      );
+    } catch (error) {
+      log.error({error, usersId}, 'startTest');
     }
   });
 
   setTimeout(() => {
-    console.log(`Start after ${timeAfterStart} sec.`);
+    log.info(`Start after ${timeAfterStart} sec.`);
   }, timeAfterStart * 1000);
 }
 
@@ -34,13 +31,7 @@ async function sendQuestionToUsers(usersId, question) {
 
       const message = await bot.telegram.sendMessage(
         id,
-        i18n.t(i18n.currentLocale, 'question', {
-          actualQuestion: question.actualQuestion,
-          allQuestions: question.allQuestions,
-          title: question.title,
-          subtitle: question.subtitle,
-          timeout: question.timeout,
-        }),
+        i18n.t(i18n.currentLocale, 'question', {question}),
         Markup.inlineKeyboard(markupButtons)
           .resize()
           .oneTime()
@@ -48,12 +39,8 @@ async function sendQuestionToUsers(usersId, question) {
       );
 
       await redis.addUserMessageId(id, message.message_id);
-    } catch (err) {
-      console.log(
-        `Error with sendQuestionToUsers: { usersId: ${usersId}, question: ${question} }`,
-      );
-
-      throw new Error(`Error in addFunctions/sendQuestionToUsers: ${err}`);
+    } catch (error) {
+      log.error({error, usersId, question}, 'sendQuestionToUsers');
     }
   });
 }
@@ -72,10 +59,8 @@ async function sendAnswersToUsers(body) {
         }),
         {parse_mode: 'HTML'},
       );
-    } catch (err) {
-      console.log(body);
-
-      throw new Error(`Error in sendAnswersToUsers: ${err}`);
+    } catch (error) {
+      log.error({error, body}, 'sendAnswersToUsers');
     }
   });
 }
@@ -92,10 +77,8 @@ async function sendWhoNoAnswered(body) {
         id,
         i18n.t(i18n.currentLocale, 'no_answered', {body}),
       );
-    } catch (err) {
-      console.log(body);
-
-      throw new Error(`Error in sendWhoNoAnswered: ${err}`);
+    } catch (error) {
+      log.error({error, body}, 'sendWhoNoAnswered');
     }
   });
 }
@@ -109,9 +92,8 @@ async function endTest(body) {
       );
 
       await handler(Number(user.participantId));
-    } catch (err) {
-      console.log(body);
-      throw new Error(`Error in endTest: ${err}`);
+    } catch (error) {
+      log.error({error, body}, 'endTest');
     }
   });
 }

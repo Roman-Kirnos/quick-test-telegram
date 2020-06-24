@@ -1,11 +1,12 @@
 const redis = require('redis');
 
 const {URL_REDIS} = require('../../config');
+const log = require('../../logger')(__filename);
 
 const client = redis.createClient(URL_REDIS);
 
 client.on('error', error => {
-  console.error(`Redis has broken: ${error}`);
+  log.fatal({error}, 'Redis has broken!');
   process.exit(1);
 });
 

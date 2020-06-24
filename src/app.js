@@ -9,6 +9,7 @@ const {
   telegram: {webhook},
   checkAuthToken,
 } = require('./services');
+const log = require('./logger')(__filename);
 
 const app = express();
 
@@ -28,7 +29,7 @@ app.get('', async (req, res) => {
 
 // eslint-disable-next-line no-unused-vars
 app.use((error, req, res, next) => {
-  console.log(`Error with server: ${error}`);
+  log.error({error}, 'Server error');
 
   res.status(error.status || 500);
   res.json({
@@ -41,6 +42,6 @@ app.use((error, req, res, next) => {
 module.exports = {
   launch: () =>
     app.listen(PORT, () => {
-      console.log(`Server is listening on port: ${PORT}!`);
+      log.info(`Server is listening on port: ${PORT}!`);
     }),
 };

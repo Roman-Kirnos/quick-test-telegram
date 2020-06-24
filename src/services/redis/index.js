@@ -1,13 +1,13 @@
 const {promisify} = require('util');
 
 const redis = require('./redis');
+const log = require('../../logger')(__filename);
 
 async function addUserMessageId(id, value) {
   try {
-    await redis.set(`${id}telegram`, value);
-    return true;
-  } catch (err) {
-    throw new Error(`Error with add to redis: ${err}`);
+    await redis.set(id, value);
+  } catch (error) {
+    log.fatal({error}, 'redis: addUserMessageId');
   }
 }
 
@@ -15,19 +15,19 @@ async function getUserMessageId(id) {
   try {
     const getAsync = promisify(redis.get).bind(redis);
 
-    const value = await getAsync(`${id}telegram`);
+    const value = await getAsync(id);
     return value;
-  } catch (err) {
-    throw new Error(`Error with get messageId from redis: ${err}`);
+  } catch (error) {
+    log.fatal({error}, 'redis: getUserMessageId');
+    throw new Error(error);
   }
 }
 
 async function deleteUserMessageId(id) {
   try {
-    await redis.del(`${id}telegram`);
-    return true;
-  } catch (err) {
-    throw new Error(`Error with delete messageId from redis: ${err}`);
+    await redis.del(id);
+  } catch (error) {
+    log.fatal({error}, 'redis: deleteUserMessageId');
   }
 }
 
